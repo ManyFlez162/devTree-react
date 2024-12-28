@@ -1,0 +1,33 @@
+{
+  "name": "devtree",
+  "version": "1.0.0",
+  "description": "Primer proyecto con Express y TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ManyFlez162/devTree-react.git"
+  },
+  "author": "Manuel Francisco Flores Velazquez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ManyFlez162/devTree-react/issues"
+  },
+  "homepage": "https://github.com/ManyFlez162/devTree-react#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}
