@@ -3,16 +3,18 @@ import ErrorMessage from "../components/ErrorMessage"
 import { toast } from "sonner"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 import { ProfileForm, User } from "../types"
-import { updateProfile } from "../api/DevTreeAPI"
+import { updateProfile, uploadImage } from "../api/DevTreeAPI"
 
 export default function ProfileView() {
     const queryClient = useQueryClient()
-    const data : User = queryClient.getQueryData(['user'])!
+    const data: User = queryClient.getQueryData(['user'])!
 
-    const { register, handleSubmit, formState: { errors } } = useForm<ProfileForm>({ defaultValues: {
-        handle: data.handle,
-        description: data.description
-    } })
+    const { register, handleSubmit, formState: { errors } } = useForm<ProfileForm>({
+        defaultValues: {
+            handle: data.handle,
+            description: data.description
+        }
+    })
 
     const updateProfileMutation = useMutation({
         mutationFn: updateProfile,
@@ -21,12 +23,37 @@ export default function ProfileView() {
         },
         onSuccess: (data) => {
             toast.success(data)
-            queryClient.invalidateQueries({queryKey: ["user"]}) // Elimina datos en cache y hace patch
+            queryClient.invalidateQueries({ queryKey: ["user"] }) // Elimina datos en cache y hace patch
         }
     })
 
+    const uploadImageMutation = useMutation({
+        mutationFn: uploadImage,
+        onError: (error) => {
+            toast.error(error.message)
+        },
+        onSuccess: (data) => {
+            console.log(data)
+            queryClient.setQueryData(["user"], (prevData: User) => {
+                return {
+                    ...prevData,
+                    image: data
+                }
+            })
+        }
+    })
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            uploadImageMutation.mutate(e.target.files[0])
+        }
+    }
+
     const handleUserProfileForm = (formData: ProfileForm) => {
-        updateProfileMutation.mutate(formData)
+        const user : User = queryClient.getQueryData(["user"])!
+        user.description = formData.description
+        user.handle = formData.handle
+        updateProfileMutation.mutate(user)
     }
 
     return (
@@ -64,7 +91,7 @@ export default function ProfileView() {
 
             <div className="grid grid-cols-1 gap-2">
                 <label
-                    htmlFor="handle"
+                    htmlFor="image"
                 >Imagen:</label>
                 <input
                     id="image"
@@ -72,7 +99,7 @@ export default function ProfileView() {
                     name="handle"
                     className="border-none bg-slate-100 rounded-lg p-2"
                     accept="image/*"
-                    onChange={() => { }}
+                    onChange={handleChange}
                 />
             </div>
 
