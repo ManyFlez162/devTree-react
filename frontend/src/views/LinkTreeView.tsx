@@ -38,6 +38,13 @@ export default function LinkTreeView() {
     const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const updatedLinks = devTreeLinks.map(link => link.name === e.target.name ? { ...link, url: e.target.value } : link)
         setDevTreeLinks(updatedLinks)
+
+        queryClient.setQueryData(["user"], (prevData: User) => {
+            return {
+                ...prevData,
+                links: JSON.stringify(updatedLinks)
+            }
+        })
     }
 
     const links: SocialNetwork[] = JSON.parse(user.links)
@@ -90,7 +97,7 @@ export default function LinkTreeView() {
                         id: 0,
                         enabled: false
                     }
-                } else if (link.id > indexToUpdate) {
+                } else if (link.id > indexToUpdate && (indexToUpdate !== 0 && link.id === 1)) {
                     return {
                         ...link,
                         id: link.id - 1
@@ -100,8 +107,6 @@ export default function LinkTreeView() {
                 }
             })
         }
-
-
 
         // Almacena en la BD
         queryClient.setQueryData(["user"], (prevData: User) => {
@@ -125,7 +130,7 @@ export default function LinkTreeView() {
                 ))}
                 <button
                     className=" bg-cyan-400 p-2 text-lg w-full uppercase text-slate-600 rounded font-bold"
-                    onClick={() => mutate(user)}>
+                    onClick={() => mutate(queryClient.getQueryData(["user"])!)}>
                     Guardar Cambios
                 </button>
             </div>
