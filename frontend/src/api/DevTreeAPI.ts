@@ -53,3 +53,15 @@ export async function getUserByHandle(handle: String) {
         }
     }
 }
+
+export async function searchByHandle(handle: String) {
+    
+    try {
+        const {data} = await api.post<string>("/search", {handle})
+        return data
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.message);
+        }
+    }
+}
